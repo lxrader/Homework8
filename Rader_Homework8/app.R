@@ -12,9 +12,11 @@
 library(shiny)
 library(tidyverse)
 
-#Assigning min and max variables from cyl
+
+#Assigning min and max variables for slider
 min.cyl <- min(mtcars$cyl)
 max.cyl <- max(mtcars$cyl)
+
 
 # Define UI for application that draws a histogram
 ui <- fluidPage(
@@ -41,16 +43,22 @@ ui <- fluidPage(
     )
 )
 
+
 # Define server logic required to draw a histogram
 server <- function(input, output) {
 
-    output$distPlot <- renderPlot({
-        # generate bins based on input$bins from ui.R
-        x    <- faithful[, 2]
-        bins <- seq(min(x), max(x), length.out = input$bins + 1)
-
-        # draw the histogram with the specified number of bins
-        hist(x, breaks = bins, col = 'darkgray', border = 'white')
+    #Filtering mtcars and making it reactive
+    d_filt <- reactive({
+        mtcars %>%
+            filter(cyl >= min(input$cyc.adjuster)) %>%
+            filter(cyc <= max(input$cyc.adjuster))
+    })
+    
+    
+    #Building a plot
+    plot_mtcars <- eventReactive(input$goButton, {
+        ggplot(d_filt(), aes_string(x = "mpg", y = "hp", color = "gear")) +
+            geom_point()
     })
 }
 
