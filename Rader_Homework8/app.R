@@ -18,6 +18,15 @@ min.cyl <- min(mtcars$cyl)
 max.cyl <- max(mtcars$cyl)
 
 
+#Creating a vector of axis variables
+axis_variables <- names(mtcars)
+
+
+#Creating a character vector for the columns
+factor.indices <- vapply(mtcars, is.factor, TRUE)
+factor.columns <- axis_variables[factor.indices]
+
+
 # Define UI for application that draws a histogram
 ui <- fluidPage(
 
@@ -27,11 +36,26 @@ ui <- fluidPage(
     # Sidebar with a slider input for number of bins 
     sidebarLayout(
         sidebarPanel(
-            sliderInput("cyl.adjuster",
+            #Adding in a range slider
+            sliderInput("cylrange",
                         "Number of Cylinders",
-                        min.cyl,
-                        max.cyl,
+                        min = min.cyl,
+                        max = max.cyl,
                         value = c(min.cyl, max.cyl)),
+            
+            #Selecting x variable
+            selectInput(inputId = "xvar",
+                        label = "X Axis",
+                        choices = axis_variables,
+                        selected = "x"),
+            
+            #Selecting y variable
+            selectInput(inputId = "yvar",
+                        label = "Y Axis",
+                        choices = axis_variables,
+                        selected = "y"),
+            
+            #Adding in a go button
             actionButton ("goButton",
                           "Go")
         ),
@@ -44,22 +68,27 @@ ui <- fluidPage(
 )
 
 
-# Define server logic required to draw a histogram
+# Define server logic required to draw a plot
 server <- function(input, output) {
 
     #Filtering mtcars and making it reactive
     d_filt <- reactive({
         mtcars %>%
-            filter(cyl >= min(input$cyc.adjuster)) %>%
-            filter(cyc <= max(input$cyc.adjuster))
+            filter(cyl >= min(input$cylrange)) %>%
+            filter(cyl <= max(input$cylrange))
     })
     
     
     #Building a plot
     plot_mtcars <- eventReactive(input$goButton, {
-        ggplot(d_filt(), aes_string(x = "mpg", y = "hp", color = "gear")) +
+        ggplot(d_filt(), aes_string(x = input$xvar, y = input$yvar, colour = "gear")) +
             geom_point()
     })
+    
+    #Creating a dynamic plot that plots the output
+    output$mtcars_plot <- renderPlot(
+        plot_mtcars()
+    )
 }
 
 # Run the application 
