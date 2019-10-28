@@ -8,6 +8,8 @@
 ############################
 
 
+## Using mtcars data set
+
 #Loading in packages
 library(shiny)
 library(tidyverse)
@@ -22,12 +24,7 @@ max.cyl <- max(mtcars$cyl)
 axis_variables <- names(mtcars)
 
 
-#Creating a character vector for the columns
-factor.indices <- vapply(mtcars, is.factor, TRUE)
-factor.columns <- axis_variables[factor.indices]
-
-
-# Define UI for application that draws a histogram
+# Define UI for application that draws a plot
 ui <- fluidPage(
 
     # Application title
@@ -47,13 +44,19 @@ ui <- fluidPage(
             selectInput(inputId = "xvar",
                         label = "X Axis",
                         choices = axis_variables,
-                        selected = "x"),
+                        selected = "mpg"),
             
             #Selecting y variable
             selectInput(inputId = "yvar",
                         label = "Y Axis",
                         choices = axis_variables,
-                        selected = "y"),
+                        selected = "hp"),
+            
+            #Selecting the color of each point
+            selectInput(inputId = "color",
+                        label = "Points Colored By",
+                        choices = axis_variables,
+                        selected = "gear"),
             
             #Adding in a go button
             actionButton ("goButton",
@@ -81,7 +84,7 @@ server <- function(input, output) {
     
     #Building a plot
     plot_mtcars <- eventReactive(input$goButton, {
-        ggplot(d_filt(), aes_string(x = input$xvar, y = input$yvar, colour = "gear")) +
+        ggplot(d_filt(), aes_string(x = input$xvar, y = input$yvar, color = input$color)) +
             geom_point()
     })
     
