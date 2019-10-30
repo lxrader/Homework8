@@ -24,7 +24,11 @@ max.cyl <- max(mtcars$cyl)
 axis_variables <- names(mtcars)
 
 
+
 # Define UI for application that draws a plot
+
+# Define UI for application that draws a histogram
+
 ui <- fluidPage(
 
     # Application title
