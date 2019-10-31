@@ -1,5 +1,5 @@
 ############################
-# Homework 8
+# Homework 8, Louisa Rader
 #Due 11/1/2019
 #Creating a Shiny Web Application with mtcars dataset
 #Must have a range slider
@@ -7,6 +7,8 @@
 #Doesn't create plot until GO button is toggled
 ############################
 
+
+## Using mtcars data set
 
 #Loading in packages
 library(shiny)
@@ -22,7 +24,11 @@ max.cyl <- max(mtcars$cyl)
 axis_variables <- names(mtcars)
 
 
+
+# Define UI for application that draws a plot
+
 # Define UI for application that draws a histogram
+
 ui <- fluidPage(
 
     # Application title
@@ -80,7 +86,7 @@ server <- function(input, output) {
     })
     
     
-    #Building a plot
+    #Building a reactive plot
     plot_mtcars <- eventReactive(input$goButton, {
         ggplot(d_filt(), aes_string(x = input$xvar, y = input$yvar, color = input$color)) +
             geom_point()
